@@ -1,0 +1,29 @@
+name: Build and deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: '**.md'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+
+        with:
+          node-version: 16.x
+
+      - name: Install, build 🔧
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages
+          folder: build
