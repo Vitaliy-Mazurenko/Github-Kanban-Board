@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,  useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
@@ -16,9 +16,14 @@ function App() {
     e.preventDefault();
 		fetch(title)
 		.then((res) => res.json())
-		.then((result) => setRepo(result.data));
+		.then((result) => setRepo(result.items));
     console.log(repo);
 	};
+
+  useEffect(() => {
+    console.log(repo);
+		setRepo(repo);
+	}, [repo]);
 
   return (
     <div className="App">
