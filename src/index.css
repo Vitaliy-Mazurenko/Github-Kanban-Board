@@ -12,8 +12,9 @@ code {
     monospace;
 }
 
-.column{
-  background-color: lightgray;
+.cards-column {
+  background-color: #CED4DA;
+  min-height: 70vh;
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
@@ -22,4 +23,12 @@ code {
 
 .breadcrumb-item > a {
   text-decoration: none!important;
+}
+
+.card .card-body {
+  padding: 0.5rem!important;
+}
+
+.card .card-body .card-title {
+  font-size: 0.7rem!important;
 }

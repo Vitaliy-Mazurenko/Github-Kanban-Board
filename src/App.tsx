@@ -8,16 +8,32 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 
-function App() {
-  const [title, setTitle] = useState<string>('');
-  const [repo, setRepo] = useState();
+interface IList {
+  id: number;
+  title: string;
+  created_at: string;
+  comments: string;
+}
 
-  const getURL = (e: React.SyntheticEvent) => {
+function App() {
+  const [title, setTitle] = useState<string>('https://api.github.com/repos/facebook/react/issues');
+  const [repo, setRepo] = useState<IList[]>([]);
+
+  const getURL = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-		fetch(title)
-		.then((res) => res.json())
-		.then((result) => setRepo(result.items));
-    console.log(repo);
+		// fetch(title)
+    return await fetch(`${title}`, {
+			method: 'GET',
+      headers: {
+        // 'Authorization': 'Bearer e72e16c7e42f292c6912e7710c838347ae178b4a',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+		})
+    .then((res) => res.json())
+		.then((result) => setRepo(result))
+		.catch((error) => {
+		console.error('Error request:', error);
+		});
 	};
 
   useEffect(() => {
@@ -45,7 +61,7 @@ function App() {
         </Button>
       </InputGroup>
       </header>
-      <Breadcrumb className="mx-3 my-1">
+      <Breadcrumb className="mx-3 mt-1">
       <Breadcrumb.Item href="#">Facebook</Breadcrumb.Item>
       <Breadcrumb.Item href="#">
         React
@@ -54,36 +70,43 @@ function App() {
       <Container fluid>
             <Row nogutters="true">
                 <Col xs={12} sm={4}>
-                <div className='column p-2'>
-                <Card bg="light">
+                <div className='text-center'>ToDo</div>
+                <div className='cards-column p-2 my-2'>
+                {(!!repo && typeof repo[0] !== 'undefined') && repo!.map((item) => (
+                <Card bg="white" className="mb-2" key={item.id}>
+                <Card.Body>
+                    <Card.Title>{item.title} </Card.Title>
+                    <Card.Text className="text-secondary">
+                        {item.created_at}
+                        <p>{item.comments}</p>
+                    </Card.Text>
+                </Card.Body>
+                </Card>
+			))}
+
+                </div>
+                </Col>
+                <Col xs={12} sm={4}>
+                <div className='text-center'>In Progress</div>
+                <div className='cards-column p-2 my-2'>
+                <Card bg="white" className="mb-2">
                 <Card.Body>
                     <Card.Title>Welcome to </Card.Title>
                     <Card.Text className="text-secondary">
-                        Discover the beauty of React Bootstrap Layout
+                        
                     </Card.Text>
                 </Card.Body>
                 </Card>
                 </div>
                 </Col>
                 <Col xs={12} sm={4}>
-                <div className='column p-2'>
-                <Card bg="light">
+                <div className='text-center'>Done</div>
+                <div className='cards-column p-2 my-2'>
+                <Card bg="white" className="mb-2">
                 <Card.Body>
                     <Card.Title>Welcome to </Card.Title>
                     <Card.Text className="text-secondary">
-                        Discover the beauty of React Bootstrap Layout 2
-                    </Card.Text>
-                </Card.Body>
-                </Card>
-                </div>
-                </Col>
-                <Col xs={12} sm={4}>
-                <div className='column p-2'>
-                <Card bg="light">
-                <Card.Body>
-                    <Card.Title>Welcome to </Card.Title>
-                    <Card.Text className="text-secondary">
-                        Discover the beauty of React Bootstrap Layout 3
+                        
                     </Card.Text>
                 </Card.Body>
                 </Card>
