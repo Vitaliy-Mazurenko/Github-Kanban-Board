@@ -32,3 +32,19 @@ code {
 .card .card-body .card-title {
   font-size: 0.7rem!important;
 }
+
+.star-rating {
+    color: #ccc;
+    cursor: pointer;
+    -webkit-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+    display: inline-block;
+}
+
+.star-rating img {
+    width: 1.4em;
+    height: 1.4em;
+    margin-left: 25px;
+}
+

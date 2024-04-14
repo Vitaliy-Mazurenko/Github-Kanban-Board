@@ -7,6 +7,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
+import { getStarCount } from './helpers/starCount';
+import star from "./assets/star_favourite.svg";
 
 interface IList {
   id: number;
@@ -16,8 +18,13 @@ interface IList {
 }
 
 function App() {
-  const [title, setTitle] = useState<string>('https://api.github.com/repos/facebook/react/issues');
+  const [title, setTitle] = useState<string>(`https://api.github.com/repos/${'facebook'}/${'react'}`);
   const [repo, setRepo] = useState<IList[]>([]);
+
+  const starCount = getStarCount('facebook', 'react').then((starsCount) => {
+    console.log(`Total star count: ${starsCount}`);
+    return starsCount;
+});
 
   const getURL = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -66,7 +73,13 @@ function App() {
       <Breadcrumb.Item href="#">
         React
       </Breadcrumb.Item>
+
+			      <span className='star-rating'><img src={star} alt="star" />
+            </span>
+
     </Breadcrumb>
+
+  {/* <img src={star} alt="dots" /> */}
       <Container fluid>
             <Row nogutters="true">
                 <Col xs={12} sm={4}>
