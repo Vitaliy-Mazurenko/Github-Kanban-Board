@@ -8,6 +8,7 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { getStarCount } from './helpers/starCount';
+import dateCalculate  from './helpers/dateCalculate'; 
 import star from "./assets/star_favourite.svg";
 
 interface IList {
@@ -18,18 +19,22 @@ interface IList {
 }
 
 function App() {
-  const [title, setTitle] = useState<string>(`https://api.github.com/repos/${'facebook'}/${'react'}`);
+  const [title, setTitle] = useState<string>('https://api.github.com/repos/facebook/react/issues');
   const [repo, setRepo] = useState<IList[]>([]);
-
-  const starCount = getStarCount('facebook', 'react').then((starsCount) => {
-    console.log(`Total star count: ${starsCount}`);
-    return starsCount;
-});
+  const [stars, setStars] = useState<number>(0);
+  const today: Date = new Date();
+console.log(today);
 
   const getURL = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-		// fetch(title)
-    return await fetch(`${title}`, {
+
+    const starCount = await getStarCount('facebook', 'react').then((starsCount) => {
+      console.log(`Total star count: ${starsCount}`);
+      setStars(starsCount);
+  });
+  console.log(stars);  //
+
+    return await fetch(title, {
 			method: 'GET',
       headers: {
         // 'Authorization': 'Bearer e72e16c7e42f292c6912e7710c838347ae178b4a',
@@ -75,11 +80,11 @@ function App() {
       </Breadcrumb.Item>
 
 			      <span className='star-rating'><img src={star} alt="star" />
+            <span className='stars mx-1 text-black'>{stars} stars</span>
             </span>
 
     </Breadcrumb>
 
-  {/* <img src={star} alt="dots" /> */}
       <Container fluid>
             <Row nogutters="true">
                 <Col xs={12} sm={4}>
@@ -90,8 +95,8 @@ function App() {
                 <Card.Body>
                     <Card.Title>{item.title} </Card.Title>
                     <Card.Text className="text-secondary">
-                        {item.created_at}
-                        <p>{item.comments}</p>
+                      opened {dateCalculate(item.created_at)} days ago
+                        <p>Comments {item.comments}</p>
                     </Card.Text>
                 </Card.Body>
                 </Card>
