@@ -15,42 +15,57 @@ interface IList {
   id: number;
   title: string;
   created_at: string;
+  number: number;
   comments: string;
 }
 
 function App() {
-  const [title, setTitle] = useState<string>('https://api.github.com/repos/facebook/react/issues');
+  const [path, setTitle] = useState<string>('https://github.com/facebook/react');
   const [repo, setRepo] = useState<IList[]>([]);
   const [stars, setStars] = useState<number>(0);
-  const today: Date = new Date();
-console.log(today);
 
   const getURL = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    const starCount = await getStarCount('facebook', 'react').then((starsCount) => {
-      console.log(`Total star count: ${starsCount}`);
-      setStars(starsCount);
-  });
-  console.log(stars);  //
-
-    return await fetch(title, {
-			method: 'GET',
-      headers: {
-        // 'Authorization': 'Bearer e72e16c7e42f292c6912e7710c838347ae178b4a',
-        'X-GitHub-Api-Version': '2022-11-28'
+    if (checkPath(path)) {
+      let reposPath: string;
+      if (path.endsWith('/')) {
+        reposPath = path.substring(0, path.length - 1).split('github.com')[1];
+      } else {
+        reposPath = path.split('github.com')[1];
       }
-		})
-    .then((res) => res.json())
-		.then((result) => setRepo(result))
-		.catch((error) => {
-		console.error('Error request:', error);
-		});
-	};
+   
+    try {
+      const starsCount = await getStarCount(reposPath.split('/')[1], reposPath.split('/')[2]);
+      setStars(starsCount);
+    } catch (error) {
+      console.error('Error fetching star count:', error);
+    }
+
+    try {
+      const res = await fetch(`https://api.github.com/repos${reposPath}/issues`, {
+        method: 'GET',
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
+      });
+      const result = await res.json();
+      setRepo(result);
+    } catch (error) {
+      console.error('Error request:', error);
+    }
+  }
+  };
+
+  function checkPath(path: string): boolean {
+    if (!path.includes('github.com')) {
+      return false
+    }
+    return path.length > 0;
+  }
 
   useEffect(() => {
     console.log(repo);
-		setRepo(repo);
 	}, [repo]);
 
   return (
@@ -62,12 +77,14 @@ console.log(today);
           placeholder="Enter repo URL"
           type="url"
           aria-describedby="basic-addon3"
-          value={title}
+          value={path}
+          required
           onChange={(e) => setTitle(e.target.value)} />
         <Button
           variant="outline-secondary"
           id="button-addon2"
           className="mx-1"
+          type="submit"
           onClick={getURL}>
         Load issues
         </Button>
@@ -78,25 +95,23 @@ console.log(today);
       <Breadcrumb.Item href="#">
         React
       </Breadcrumb.Item>
-
 			      <span className='star-rating'><img src={star} alt="star" />
             <span className='stars mx-1 text-black'>{stars} stars</span>
             </span>
-
-    </Breadcrumb>
+      </Breadcrumb>
 
       <Container fluid>
             <Row nogutters="true">
                 <Col xs={12} sm={4}>
                 <div className='text-center'>ToDo</div>
                 <div className='cards-column p-2 my-2'>
-                {(!!repo && typeof repo[0] !== 'undefined') && repo!.map((item) => (
+                {!!repo.length && repo.map((item) => (
                 <Card bg="white" className="mb-2" key={item.id}>
                 <Card.Body>
                     <Card.Title>{item.title} </Card.Title>
                     <Card.Text className="text-secondary">
-                      opened {dateCalculate(item.created_at)} days ago
-                        <p>Comments {item.comments}</p>
+                    #{item.number} opened {dateCalculate(item.created_at)} days ago
+                        <p>Admin | Comments: {item.comments}</p>
                     </Card.Text>
                 </Card.Body>
                 </Card>
