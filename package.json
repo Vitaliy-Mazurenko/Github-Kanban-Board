@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://Vitaliy-Mazurenko.github.io/github-kanban-board/",
   "dependencies": {
+    "@reduxjs/toolkit": "^2.2.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -26,7 +27,6 @@
     "eject": "react-scripts eject",
     "gh-pages": "gh-pages -d build",
     "deploy": "npm run build && npm run gh-pages"
-
   },
   "eslintConfig": {
     "extends": [

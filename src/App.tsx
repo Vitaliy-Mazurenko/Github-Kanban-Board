@@ -110,7 +110,8 @@ function App() {
                 <Card.Body>
                     <Card.Title>{item.title} </Card.Title>
                     <Card.Text className="text-secondary">
-                    #{item.number} opened {dateCalculate(item.created_at)} days ago
+                    #{item.number} opened {dateCalculate(item.created_at) ?
+                     dateCalculate(item.created_at) +' days ago' : ' today'} 
                         <p>Admin | Comments: {item.comments}</p>
                     </Card.Text>
                 </Card.Body>
