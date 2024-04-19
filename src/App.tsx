@@ -20,30 +20,42 @@ interface IList {
 }
 
 function App() {
-  const [path, setTitle] = useState<string>('https://github.com/facebook/react');
+  const [path, setPath] = useState<string>('https://github.com/facebook/react');
+  const [reposPath, setReposPath] = useState<string>('');
   const [repo, setRepo] = useState<IList[]>([]);
   const [stars, setStars] = useState<number>(0);
+  const [checkInput, setCheckInput] = useState('');
 
   const getURL = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    if (checkPath(path)) {
-      let reposPath: string;
-      if (path.endsWith('/')) {
-        reposPath = path.substring(0, path.length - 1).split('github.com')[1];
-      } else {
-        reposPath = path.split('github.com')[1];
+    function checkPath(path: string): boolean {
+      if (!path.includes('github.com')) {
+        setCheckInput('The repository URL must start with:  github.com');
+        return false
       }
+      if (!(path.split('github.com')[1]).split('/')[2]) {
+        setCheckInput('Enter the correct repository URL');
+        return false
+      }
+      setCheckInput('');
+      return path.length > 0;
+    }
+
+    if (checkPath(path)) {
+      let userName: string = (path.split('github.com')[1]).split('/')[1];
+      let repoName: string = (path.split('github.com')[1]).split('/')[2];
+      setReposPath(`${userName}/${repoName}`);
    
     try {
-      const starsCount = await getStarCount(reposPath.split('/')[1], reposPath.split('/')[2]);
+      const starsCount = await getStarCount(userName, repoName);
       setStars(starsCount);
     } catch (error) {
       console.error('Error fetching star count:', error);
     }
 
     try {
-      const res = await fetch(`https://api.github.com/repos${reposPath}/issues`, {
+      const res = await fetch(`https://api.github.com/repos/${userName}/${repoName}/issues`, {
         method: 'GET',
         headers: {
           'X-GitHub-Api-Version': '2022-11-28'
@@ -57,12 +69,6 @@ function App() {
   }
   };
 
-  function checkPath(path: string): boolean {
-    if (!path.includes('github.com')) {
-      return false
-    }
-    return path.length > 0;
-  }
 
   useEffect(() => {
     console.log(repo);
@@ -79,7 +85,7 @@ function App() {
           aria-describedby="basic-addon3"
           value={path}
           required
-          onChange={(e) => setTitle(e.target.value)} />
+          onChange={(e) => setPath(e.target.value)} />
         <Button
           variant="outline-secondary"
           id="button-addon2"
@@ -89,16 +95,20 @@ function App() {
         Load issues
         </Button>
       </InputGroup>
+      {!!checkInput && <span className='validate text-danger mx-2'>{checkInput}</span>}
+
       </header>
-      <Breadcrumb className="mx-3 mt-1">
-      <Breadcrumb.Item href="#">Facebook</Breadcrumb.Item>
-      <Breadcrumb.Item href="#">
-        React
+      {reposPath &&  (<Breadcrumb className="mx-3 mt-1">
+      <Breadcrumb.Item href="#" className='text-capitalize'>
+        {reposPath.split('/')[0]}
+        </Breadcrumb.Item>
+      <Breadcrumb.Item href="#" className='text-capitalize'>
+        {reposPath.split('/')[1]}
       </Breadcrumb.Item>
 			      <span className='star-rating'><img src={star} alt="star" />
-            <span className='stars mx-1 text-black'>{stars} stars</span>
+            <span className='stars text-black'>{stars} stars</span>
             </span>
-      </Breadcrumb>
+      </Breadcrumb>)}
 
       <Container fluid>
             <Row nogutters="true">
